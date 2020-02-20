@@ -1,12 +1,23 @@
 #!/bin/bash
 
 STARTDIR="~/repo-transfer"
+REPOLIST="repolist"
 PROJECT="repo-archive"
-REPO=
 
-cd "$STARTDIR"
+if cd "$STARTDIR"; then
 
-git clone --bare "$REPO_URL"
-cd $(echo "$REPO_URL" | cut -d'/')
-az repos create --project "$PROJECT" --name "$REPO" # > AZ_URL
-git push --mirror "$AZ_URL"
+    while read REPO_URL; do
+        
+        REPO=$(echo "$REPO_URL" | cut -d'/' -f2 | cut -d'.' -f1)
+        AZ_URL=$(az repos create --project "$PROJECT" --name "$REPO" | jq -r '.sshUrl')
+        
+        git clone --bare "$REPO_URL"
+        cd "$REPO".git
+        git push --mirror "$AZ_URL"
+        cd ..
+    
+    done <"$REPOLIST"
+
+else
+    echo "Directory $STARTDIR doesn't exist!"
+fi
