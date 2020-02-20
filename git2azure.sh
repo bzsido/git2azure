@@ -1,6 +1,6 @@
 #!/bin/bash
 
-STARTDIR="~/repo-transfer"
+STARTDIR="$HOME/repo-transfer"
 REPOLIST="repolist"
 PROJECT="repo-archive"
 
